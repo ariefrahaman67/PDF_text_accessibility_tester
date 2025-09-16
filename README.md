@@ -10,9 +10,11 @@ A modern, client-side web tool for checking the accessibility of PDF documents i
 
 <div align="center">
 
-[![example 1](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example1.png)](https://github.com/R0mb0/PDF_text_accessibility_tester)
+## [👉 Click here to test the page! 👈](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
 
-[![example 2](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example2.png)](https://github.com/R0mb0/PDF_text_accessibility_tester)
+[![example 1](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example1.png)](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
+
+[![example 2](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example2.png)](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
 
 </div>
 
