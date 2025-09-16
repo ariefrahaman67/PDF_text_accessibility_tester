@@ -11,6 +11,19 @@ const uploadAgainBtn = document.getElementById('uploadAgainBtn');
 const resultsTableContainer = document.getElementById('resultsTableContainer');
 const legend = document.getElementById('legend');
 
+// Image surface tolerance (slider)
+const toleranceSection = document.getElementById('toleranceSection');
+const toleranceSlider = document.getElementById('toleranceSlider');
+const toleranceValue = document.getElementById('toleranceValue');
+let tolerancePercent = parseInt(toleranceSlider.value) || 80;
+
+// Update slider value display
+toleranceSlider.oninput = function() {
+    toleranceValue.textContent = this.value + "%";
+    tolerancePercent = parseInt(this.value);
+};
+toleranceValue.textContent = toleranceSlider.value + "%";
+
 let allResults = [];
 let currentPage = 1;
 const pageSize = 20;
@@ -23,6 +36,7 @@ function showUploadBtn() {
     resultsSection.style.display = 'none';
     resultsTableContainer.innerHTML = '';
     legend.style.display = 'none';
+    toleranceSection.style.display = 'flex';
 }
 function showProgress(title, percent, color = '#4f8cff') {
     progressContainer.style.display = 'block';
@@ -83,7 +97,6 @@ function renderResultsTable() {
 
 // PDF analysis
 async function analyzePDF(file, idx, total) {
-    // Load PDF.js
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     let doc;
@@ -92,7 +105,7 @@ async function analyzePDF(file, idx, total) {
     } catch (e) {
         return { filename: file.name, accessible: false, previewDataUrl: "", error: true };
     }
-    // Thumbnail of first page (scale 1)
+    // First page thumbnail
     let previewDataUrl = "";
     try {
         const page = await doc.getPage(1);
@@ -106,49 +119,76 @@ async function analyzePDF(file, idx, total) {
     } catch (e) {
         previewDataUrl = "";
     }
-    // Accessibility analysis
-    let hasText = false;
-    let isReadable = false;
-    try {
-        for (let i = 1; i <= doc.numPages && !hasText; i++) {
+
+    // Accessibility analysis with image tolerance
+    let totalImagePages = 0;
+    let totalPages = doc.numPages;
+    let totalTextChars = 0;
+    let totalEstimatedTextChars = 0; // Estimate of max text per "full text" page
+    let realTextPages = 0;
+
+    for (let i = 1; i <= totalPages; i++) {
+        try {
             const page = await doc.getPage(i);
             const textContent = await page.getTextContent();
             const items = textContent.items;
             if (items.length > 0) {
-                hasText = true;
-                // Join text
+                // Character count and estimate
                 let text = items.map(item => item.str).join(' ').replace(/\s+/g, ' ').trim();
-                // If text is long enough and readable
-                if (text.length > 20) {
-                    // Check for regular characters
+                let chars = text.length;
+                totalTextChars += chars;
+                // Heuristic: a page full of text ≈ 2000 chars (rough average)
+                totalEstimatedTextChars += 2000;
+                // If at least one page has readable text, count as text page
+                if (chars > 20) {
                     let normalChars = text.replace(/[^a-zA-Z0-9À-ÿ\s.,;:'"-]/g, "");
-                    let ratio = normalChars.length / text.length;
-                    isReadable = ratio > 0.7;
+                    let ratio = normalChars.length / chars;
+                    if (ratio > 0.7) {
+                        realTextPages += 1;
+                    }
                 }
+            } else {
+                // Image-only page
+                totalEstimatedTextChars += 2000;
+                totalImagePages += 1;
             }
+        } catch (e) {
+            totalImagePages += 1;
+            totalEstimatedTextChars += 2000;
         }
-    } catch (e) {
-        hasText = false;
-        isReadable = false;
     }
-    // Accessible if has selectable and readable text
-    let accessible = hasText && isReadable;
+
+    // Percentage of image area
+    let textPercent = (totalTextChars / totalEstimatedTextChars) * 100;
+    let imagePercent = 100 - textPercent;
+
+    // Accessibility based on slider: if image percent exceeds tolerance, NOT accessible
+    let accessible = imagePercent < tolerancePercent && realTextPages > 0;
+
     return { filename: file.name, accessible, previewDataUrl };
+}
+
+// Exclude .lnk (Windows shortcuts) and non-PDF files
+function filterFiles(files) {
+    return Array.from(files).filter(f =>
+        f.type === "application/pdf" &&
+        !f.name.toLowerCase().endsWith('.lnk') &&
+        f.name.toLowerCase().endsWith('.pdf')
+    );
 }
 
 uploadBtn.onclick = () => fileInput.click();
 
 fileInput.onchange = async function() {
-    const files = Array.from(fileInput.files);
-    if (files.length === 0) return;
-
-    // Only PDF extension allowed
-    if (!files.every(f => f.name.toLowerCase().endsWith('.pdf'))) {
-        alert('Only PDF files are accepted!');
+    // Filter: only real PDFs, no .lnk (shortcuts)
+    const files = filterFiles(fileInput.files);
+    if (files.length === 0) {
+        alert('Only real PDF files are accepted!');
         showUploadBtn();
         return;
     }
     uploadBtn.style.display = 'none';
+    toleranceSection.style.display = 'none'; // Hide slider and description
     showProgress('Uploading files...', 0, '#4f8cff');
 
     let results = [];
