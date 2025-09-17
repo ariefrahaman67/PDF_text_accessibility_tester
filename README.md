@@ -20,7 +20,7 @@ A modern, client-side web tool for checking the accessibility of PDF documents i
 
 ---
 
-## Features
+## 🚀 Features
 
 - **Batch upload PDF files:** Select one or more PDFs from your computer. Only `.pdf` files are accepted (Windows shortcuts and other types are excluded).
 - **Image area tolerance slider:** Choose the maximum percentage of document area that can be made up of images (default: 80%). If a document contains more images than the set threshold, it is considered not accessible. This allows for more granular control over what is considered accessible, even for mixed-content PDFs.
@@ -34,7 +34,7 @@ A modern, client-side web tool for checking the accessibility of PDF documents i
 
 ---
 
-## What is "PDF Accessibility"?
+## ❓ What is "PDF Accessibility"?
 
 In this tool, a PDF is considered **accessible** if:
 - The document contains at least one page with selectable, readable text (not just scanned images).
@@ -49,7 +49,7 @@ A PDF is **not accessible** if:
 
 ---
 
-## How To Use
+## 💡 How To Use
 
 1. **Open the application** in your browser (just open `index.html`).
 2. Click the **"Upload documents"** button.
@@ -65,7 +65,7 @@ A PDF is **not accessible** if:
 
 ---
 
-## How the Tolerance Slider Works
+## 🛠️ How the Tolerance Slider Works
 
 The **image area tolerance slider** allows you to define the maximum percentage of each PDF that can be composed of images for it to be considered accessible.  
 - **Default value:** 80% (indicated on the slider).  
@@ -74,8 +74,20 @@ The **image area tolerance slider** allows you to define the maximum percentage 
 
 ---
 
-## Limitations
+## ✨ Limitations
 
 - Does not check for full WCAG/PDF-UA accessibility, only for selectable/readable text and image content percentage.
 - Password-protected, encrypted, or DRM PDFs are marked as "not accessible".
 - Analysis speed depends on your browser and computer.
+
+---
+
+## 📖 License
+
+MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Credits & Inspiration
+
+- [PDF.js](https://github.com/mozilla/pdf.js)
