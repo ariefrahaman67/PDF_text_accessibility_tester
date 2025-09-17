@@ -74,6 +74,21 @@ The **image area tolerance slider** allows you to define the maximum percentage 
 
 ---
 
+## 🔒 Privacy & Security
+
+- **All processing is done locally** in your browser.
+- **No file is sent to any server**.
+- **No data is stored** except for temporary in-memory use during the browser session.
+
+---
+
+## 🏆 What makes it special?
+
+- **No backend or server needed:** Everything runs in your browser. Perfect for privacy-conscious workflows or environments where installation of new software is not possible.
+- **No dependencies beyond your browser:** Works on Windows, Mac, Linux, ChromeOS — anywhere with a modern browser.
+
+---
+
 ## ✨ Limitations
 
 - Does not check for full WCAG/PDF-UA accessibility, only for selectable/readable text and image content percentage.
