@@ -1,4 +1,4 @@
-// PDF.js worker config
+// PDF.js worker configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
 
 const uploadBtn = document.getElementById('uploadBtn');
@@ -11,7 +11,7 @@ const uploadAgainBtn = document.getElementById('uploadAgainBtn');
 const resultsTableContainer = document.getElementById('resultsTableContainer');
 const legend = document.getElementById('legend');
 
-// Image surface tolerance (slider)
+// Tolerance slider
 const toleranceSection = document.getElementById('toleranceSection');
 const toleranceSlider = document.getElementById('toleranceSlider');
 const toleranceValue = document.getElementById('toleranceValue');
@@ -66,11 +66,16 @@ function renderResultsTable() {
     for(let i = startIdx; i < endIdx; i++) {
         const res = allResults[i];
         let preview = res.previewDataUrl
-            ? `<img src="${res.previewDataUrl}" class="pdf-preview" alt="PDF preview">`
-            : `<img src="pdf_placeholder.svg" class="pdf-preview" alt="PDF preview">`;
-        let lamp = res.accessible
-            ? `<img src="lamp_green.svg" class="lamp-icon" alt="Accessible">`
-            : `<img src="lamp_red.svg" class="lamp-icon" alt="Not accessible">`;
+            ? `<img src="${res.previewDataUrl}" class="pdf-preview" alt="PDF Preview">`
+            : `<img src="pdf_placeholder.svg" class="pdf-preview" alt="PDF Preview">`;
+        let lamp;
+        if (res.signedUnsupported) {
+            lamp = `<img src="lamp_yellow.svg" class="lamp-icon" alt="Signed PDF not supported">`;
+        } else {
+            lamp = res.accessible
+                ? `<img src="lamp_green.svg" class="lamp-icon" alt="Accessible">`
+                : `<img src="lamp_red.svg" class="lamp-icon" alt="Not accessible">`;
+        }
         tableHtml += `<tr>
             <td>${preview}</td>
             <td>${res.filename}</td>
@@ -95,17 +100,56 @@ function renderResultsTable() {
     }
 }
 
+// Extract PDF from .p7m (using Lapo Luchini's asn1.js)
+async function extractPdfFromP7m(arrayBuffer) {
+    try {
+        // ASN.1 decode
+        const asn1 = ASN1.decode(arrayBuffer);
+        // Search for the PDF in ASN.1 content
+        function findPdf(node) {
+            if (node.sub) {
+                for (const sub of node.sub) {
+                    const found = findPdf(sub);
+                    if (found) return found;
+                }
+            }
+            if (node.stream && node.stream.length > 4 &&
+                node.stream[0] === 0x25 && node.stream[1] === 0x50 &&
+                node.stream[2] === 0x44 && node.stream[3] === 0x46) {
+                // Found "%PDF"
+                return new Uint8Array(node.stream);
+            }
+            return null;
+        }
+        return findPdf(asn1);
+    } catch (e) {
+        return null;
+    }
+}
+
 // PDF analysis
 async function analyzePDF(file, idx, total) {
+    let filename = file.name;
+    // If .p7m or .pdf.p7m, try to extract PDF
+    if (filename.toLowerCase().endsWith('.p7m') || filename.toLowerCase().endsWith('.pdf.p7m')) {
+        const arrayBuffer = await file.arrayBuffer();
+        let pdfData = await extractPdfFromP7m(arrayBuffer);
+        if (!pdfData) {
+            // Could not extract PDF, yellow lamp
+            return { filename, accessible: false, previewDataUrl: "", signedUnsupported: true };
+        }
+        file = new Blob([pdfData], { type: "application/pdf" });
+    }
+    // Normal PDF analysis
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     let doc;
     try {
         doc = await loadingTask.promise;
     } catch (e) {
-        return { filename: file.name, accessible: false, previewDataUrl: "", error: true };
+        return { filename, accessible: false, previewDataUrl: "", error: true };
     }
-    // First page thumbnail
+    // First page preview
     let previewDataUrl = "";
     try {
         const page = await doc.getPage(1);
@@ -119,27 +163,22 @@ async function analyzePDF(file, idx, total) {
     } catch (e) {
         previewDataUrl = "";
     }
-
     // Accessibility analysis with image tolerance
     let totalImagePages = 0;
     let totalPages = doc.numPages;
     let totalTextChars = 0;
-    let totalEstimatedTextChars = 0; // Estimate of max text per "full text" page
+    let totalEstimatedTextChars = 0;
     let realTextPages = 0;
-
     for (let i = 1; i <= totalPages; i++) {
         try {
             const page = await doc.getPage(i);
             const textContent = await page.getTextContent();
             const items = textContent.items;
             if (items.length > 0) {
-                // Character count and estimate
                 let text = items.map(item => item.str).join(' ').replace(/\s+/g, ' ').trim();
                 let chars = text.length;
                 totalTextChars += chars;
-                // Heuristic: a page full of text ≈ 2000 chars (rough average)
                 totalEstimatedTextChars += 2000;
-                // If at least one page has readable text, count as text page
                 if (chars > 20) {
                     let normalChars = text.replace(/[^a-zA-Z0-9À-ÿ\s.,;:'"-]/g, "");
                     let ratio = normalChars.length / chars;
@@ -148,7 +187,6 @@ async function analyzePDF(file, idx, total) {
                     }
                 }
             } else {
-                // Image-only page
                 totalEstimatedTextChars += 2000;
                 totalImagePages += 1;
             }
@@ -157,40 +195,34 @@ async function analyzePDF(file, idx, total) {
             totalEstimatedTextChars += 2000;
         }
     }
-
-    // Percentage of image area
     let textPercent = (totalTextChars / totalEstimatedTextChars) * 100;
     let imagePercent = 100 - textPercent;
-
-    // Accessibility based on slider: if image percent exceeds tolerance, NOT accessible
     let accessible = imagePercent < tolerancePercent && realTextPages > 0;
-
-    return { filename: file.name, accessible, previewDataUrl };
+    return { filename, accessible, previewDataUrl };
 }
 
-// Exclude .lnk (Windows shortcuts) and non-PDF files
+// File filter: accept .pdf, .p7m, .pdf.p7m, exclude .lnk
 function filterFiles(files) {
     return Array.from(files).filter(f =>
-        f.type === "application/pdf" &&
-        !f.name.toLowerCase().endsWith('.lnk') &&
-        f.name.toLowerCase().endsWith('.pdf')
+        (f.type === "application/pdf" ||
+         f.name.toLowerCase().endsWith('.p7m') ||
+         f.name.toLowerCase().endsWith('.pdf.p7m')) &&
+        !f.name.toLowerCase().endsWith('.lnk')
     );
 }
 
 uploadBtn.onclick = () => fileInput.click();
 
 fileInput.onchange = async function() {
-    // Filter: only real PDFs, no .lnk (shortcuts)
     const files = filterFiles(fileInput.files);
     if (files.length === 0) {
-        alert('Only real PDF files are accepted!');
+        alert('Only real PDF files and signed PDF files (.p7m, .pdf.p7m) are accepted!');
         showUploadBtn();
         return;
     }
     uploadBtn.style.display = 'none';
-    toleranceSection.style.display = 'none'; // Hide slider and description
+    toleranceSection.style.display = 'none';
     showProgress('Uploading files...', 0, '#4f8cff');
-
     let results = [];
     for (let i = 0; i < files.length; i++) {
         showProgress(`Analyzing documents... (${i+1}/${files.length})`, Math.round(((i)/files.length)*100), '#34d49c');
